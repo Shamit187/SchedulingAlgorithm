@@ -33,8 +33,10 @@ int generateEdges(vector<vector<int>> & input_graph, string const& student_file_
     }
     string line;
     int number;
+    int student_number = 0;
     vector<int> student_data;
     while(std::getline(student_file, line)){
+        student_number++;
         std::stringstream ss(line);
         student_data.clear();
         while (ss >> number) student_data.push_back(number - 1); //courses in file start from 1, we start from 0
@@ -42,5 +44,5 @@ int generateEdges(vector<vector<int>> & input_graph, string const& student_file_
         add_edge(student_data, input_graph);
     }
     student_file.close();
-    return 0;
+    return student_number;
 }

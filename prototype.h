@@ -11,6 +11,8 @@
 #include <tuple>
 #include <random>
 #include <chrono>
+#include <algorithm>
+#include <random>
 
 using std::cout;
 using std::endl;
@@ -35,7 +37,7 @@ add_edge
 
 void
 kempeChainInterchange
-        (vector<vector<int>> &input_graph, vector<int> &color_map);
+        (int most_offensive_index, vector<int> &color_map, vector<vector<int>> &input_graph);
 
 void
 modifiedDFS
@@ -45,12 +47,12 @@ void
 color_switch
         (int vertex, int color1, int color2, vector<int> &color_map);
 
-void
+vector<int>
 simulatedAnnealing
         (int choice, double init_temp, double final_temp, double cooling_rate, vector<vector<int>> &input_graph, vector<int> &color_map);
 
-long long unsigned
-calculate_penalty
+tuple<int, int>
+calculate_penalty_highest_offence
         (vector<vector<int>> &input_graph, vector<int>& current);
 
 void
@@ -72,5 +74,21 @@ connectedDijkstra
 void
 dsaturColorGeneration
         (vector<vector<int>>& input_graph, vector<int>& color_map);
+
+void
+pairwiseSwap
+        (int index, vector<int> &color_map, vector<vector<int>> &input_graph);
+
+void
+largestDegreeColorGeneration
+        (vector<vector<int>> &input_graph, vector<int> &color_map);
+
+void
+largestStudentColorGeneration
+        (vector<vector<int>> &input_graph, vector<int>& student_enrolled, vector<int> &color_map);
+
+void
+randomStudentColorGeneration
+        (vector<vector<int>> &input_graph, vector<int> &color_map);
 
 #endif
