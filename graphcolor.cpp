@@ -39,17 +39,13 @@ void generateDegreeHash(vector<vector<int>>& input_graph, priority_queue<tuple<i
 }
 
 int findPlausibleColor(int courseSize, vector<int>& neighbourhood, vector<int>& color_map){
-    vector<uint64_t> bitmaps((courseSize / 64) + 1, ~0);
-    int color;
-    for(auto i: neighbourhood){
-        color = color_map[i];
-        if(color == -1) continue;
-        bitmaps[color / 64] &= ~(1 << (color % 64));
+    for(int color = 0; color < courseSize; color++){
+        bool color_available = true;
+        for(auto vertex: neighbourhood){
+            if(color_map[vertex] == color) color_available = false;
+        }
+        if(color_available) return color;
     }
-    for(int i = 0; i < courseSize; i++){
-        if(bitmaps[i / 64] & (1 << (i % 64))) return i;
-    }
-    return 0;
 }
 
 void insertVertexDsatur(int vertex_index, int current_saturation, vector<vector<int>>& input_graph, vector<int>& color_map, priority_queue<tuple<int, int, int>>& queue){
