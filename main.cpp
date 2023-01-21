@@ -8,9 +8,6 @@ int main(int argc, char **argv) {
     int hard_choice = std::stoi(argv[2]);
     if(hard_choice < 0 || hard_choice > 3) return -1;
 
-    argv[1] = "Data/car-f-92";
-    hard_choice = 2;
-
     string course_file = (argv[1]); course_file.append(".crs");
     string student_file = (argv[1]); student_file.append(".stu");
 
@@ -57,8 +54,6 @@ int main(int argc, char **argv) {
     cout << "After Pair-Swap: " << std::get<0>(calculate_penalty_highest_offence(input_graph, color_map)) / (double) student_number << "\n";
 
     generateLogFile(input_graph, color_map);
-
-
     return 0;
 }
 
