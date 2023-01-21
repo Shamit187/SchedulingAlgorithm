@@ -6,7 +6,7 @@ simulatedAnnealing
     vector<int> current(color_map), neighbour(color_map);
     auto tuple_value = calculate_penalty_highest_offence(input_graph, current);
     unsigned most_offensive_index = std::get<1>(tuple_value);
-    long long unsigned currentPenalty = std::get<0>(tuple_value), neighbourPenalty;
+    long long int currentPenalty = std::get<0>(tuple_value), neighbourPenalty;
     double del_E;
     double current_temp = init_temp;
 
@@ -33,13 +33,9 @@ simulatedAnnealing
         del_E = (double) (neighbourPenalty - currentPenalty);
 
         double error = del_E;
-        if(choice == 1)
-            error -= fabs(del_E) * 0.4;
-
         double acceptanceProbability = exp(- error / (double) current_temp);
 
-        if(choice == 0)
-            acceptanceProbability -= 0.5;
+        if(choice == 1) acceptanceProbability -= 1; // for pairwise swap, decrease acceptance rate, seems to perform better
 
         if (del_E < 0 || distribution(generator) < acceptanceProbability){
             current = neighbour;
