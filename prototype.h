@@ -13,6 +13,7 @@
 #include <chrono>
 #include <algorithm>
 #include <random>
+#include <iomanip>
 
 using std::cout;
 using std::endl;
@@ -90,5 +91,9 @@ largestStudentColorGeneration
 void
 randomStudentColorGeneration
         (vector<vector<int>> &input_graph, vector<int> &color_map);
+
+void
+generateLogFile
+    (vector<vector<int>> &input_graph, vector<int> &color_map);
 
 #endif

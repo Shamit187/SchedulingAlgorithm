@@ -46,3 +46,15 @@ int generateEdges(vector<vector<int>> & input_graph, string const& student_file_
     student_file.close();
     return student_number;
 }
+
+void generateLogFile (vector<vector<int>> &input_graph, vector<int> &color_map){
+    std::ofstream log_file("log_file.txt", std::ifstream::out);
+
+    for(int vertex = 0; vertex < input_graph.size(); vertex++){
+        log_file << "Vertex: " << std::setw(4) << std::setfill('0') << vertex << " (Color:" << std::setw(4) << std::setfill('0') << color_map[vertex] << ") ";
+        for(auto neighbours: input_graph[vertex]){
+            log_file << std::setw(4) << std::setfill('0') << neighbours << "(" << std::setw(4) << std::setfill('0') << color_map[neighbours] << "), ";
+        }
+        log_file << "\n";
+    }
+}

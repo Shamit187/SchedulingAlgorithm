@@ -5,20 +5,30 @@ simulatedAnnealing
 (int choice, double init_temp, double final_temp, double cooling_rate, vector<vector<int>> &input_graph, vector<int> &color_map) {
     vector<int> current(color_map), neighbour(color_map);
     auto tuple_value = calculate_penalty_highest_offence(input_graph, current);
-    int most_offensive_index = std::get<1>(tuple_value);
+    unsigned most_offensive_index = std::get<1>(tuple_value);
     long long unsigned currentPenalty = std::get<0>(tuple_value), neighbourPenalty;
     long long int del_E;
     double current_temp = init_temp;
 
     std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
     std::uniform_real_distribution<> distribution(-1,1);
+    std::uniform_int_distribution<> distribution1(0 , input_graph.size() - 1);
+    vector<bool> switched_vertex(input_graph.size(), false);
     while (current_temp > final_temp){
-        if(choice == 0) kempeChainInterchange(most_offensive_index, neighbour, input_graph);
-        else pairwiseSwap(most_offensive_index, neighbour, input_graph);
+        switched_vertex[most_offensive_index] = true;
+        if(choice == 0)
+            kempeChainInterchange(most_offensive_index, neighbour, input_graph);
+        else
+            pairwiseSwap(most_offensive_index, neighbour, input_graph);
+
         tuple_value = calculate_penalty_highest_offence(input_graph, neighbour);
         neighbourPenalty = std::get<0>(tuple_value);
+        most_offensive_index = std::get<1>(tuple_value);
+
+        if(switched_vertex[most_offensive_index]) most_offensive_index = distribution1(generator);
+
         del_E = neighbourPenalty - currentPenalty;
-        double acceptanceProbability = exp(-(double)del_E / current_temp);
+        double acceptanceProbability = exp(-(2.2 * (double) del_E) / current_temp);
 
         if (del_E < 0 || distribution(generator) < acceptanceProbability){
             current = neighbour;
@@ -31,28 +41,66 @@ simulatedAnnealing
 }
 
 void pairwiseSwap(int index, vector<int> &color_map, vector<vector<int>> &input_graph) {
+    std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
+    std::uniform_int_distribution<int>distribution = std::uniform_int_distribution<int>(0, input_graph.size() - 1);
 
+    int init_vertex = index;
+    int color1 = color_map[index];
+    vector<int> init_vertex_color_conflicts;
+    for(auto neighbours: input_graph[init_vertex]){
+        init_vertex_color_conflicts.push_back(color_map[neighbours]);
+    }
+
+    int new_vertex, color2;
+    bool vertex_found = false;
+    while (!vertex_found){
+        new_vertex = distribution(generator);
+        color2 = color_map[new_vertex];
+        vertex_found = true;
+
+        if(new_vertex == init_vertex || color1 == color2) continue;
+
+        for(auto neighbours: input_graph[new_vertex]){
+            if(color_map[neighbours] == color1) {
+                vertex_found = false;
+                continue;
+            }
+        }
+        if(!vertex_found) continue;
+
+        auto it = std::find (init_vertex_color_conflicts.begin(), init_vertex_color_conflicts.end(), color2);
+        if (it != init_vertex_color_conflicts.end()) vertex_found = false;
+
+        if(!vertex_found) continue;
+    }
+    //cout << "Switched " << init_vertex << "," << new_vertex << ": " << color1 << "," << color2 << "\n";
+    color_switch(init_vertex, color1, color2, color_map);
+    color_switch(new_vertex, color1, color2, color_map);
 }
 
 tuple<int, int>
 calculate_penalty_highest_offence
 (vector<vector<int>> &input_graph, vector<int>& current) {
-    long long unsigned totalPenalty = 0;
-    unsigned penalty = 0;
+    long long int totalPenalty = 0;
+    int penalty = 0;
     unsigned distance = 0;
-    int max_penalty = -1;
-    int max_penalty_index = 0;
+    int max_penalty = 0;
+    unsigned max_penalty_index = 0;
     for(int vertex = 0; vertex < input_graph.size(); vertex++){
         for(auto neighbour: input_graph[vertex]){
-            distance = abs(current[vertex] - current[neighbour]); penalty = 0;
+            distance = abs(current[vertex] - current[neighbour]);
+            penalty = 0;
+
             if(distance < 5) {
                 penalty = pow(2, (5 - distance));
                 //penalty = 2 * (5 - distance);
             }
             totalPenalty += penalty;
-            if(penalty <= max_penalty) continue;
-            max_penalty_index = vertex;
-            max_penalty = penalty;
+
+            if(penalty > max_penalty) {
+                max_penalty_index = vertex;
+                max_penalty = (int) penalty;
+            }
         }
     }
     return std::make_tuple(totalPenalty / 2, max_penalty_index);
@@ -77,9 +125,14 @@ kempeChainInterchange
 
     //change distribution to find neighbours
     //std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
-    distribution = std::uniform_int_distribution<int>(0, input_graph[init_vertex].size() - 1);
+    int len = input_graph[init_vertex].size();
+    if(len == 0) return;
+    distribution = std::uniform_int_distribution<int>(0,  len - 1);
     int color_1 = color_map[init_vertex];
-    int color_2 = color_map[input_graph[init_vertex][distribution(generator)]];
+    int random_number = distribution(generator);
+    int color_2 = color_map[input_graph[init_vertex][random_number]];
+
+    //cout << "Switched " << init_vertex << "\n";
 
     vector<bool> visited(input_graph.size(), false);
     modifiedDFS(init_vertex, color_1, color_2, input_graph, color_map, visited);
