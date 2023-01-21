@@ -54,6 +54,10 @@ void generateLogFile (vector<vector<int>> &input_graph, vector<int> &color_map){
         log_file << "Vertex: " << std::setw(4) << std::setfill('0') << vertex << " (Color:" << std::setw(4) << std::setfill('0') << color_map[vertex] << ") ";
         for(auto neighbours: input_graph[vertex]){
             log_file << std::setw(4) << std::setfill('0') << neighbours << "(" << std::setw(4) << std::setfill('0') << color_map[neighbours] << "), ";
+            if(color_map[vertex] == color_map[neighbours]){
+                cerr << "Optimization Screwed up\n";
+                exit(-1);
+            }
         }
         log_file << "\n";
     }

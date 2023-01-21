@@ -7,15 +7,18 @@ simulatedAnnealing
     auto tuple_value = calculate_penalty_highest_offence(input_graph, current);
     unsigned most_offensive_index = std::get<1>(tuple_value);
     long long unsigned currentPenalty = std::get<0>(tuple_value), neighbourPenalty;
-    long long int del_E;
+    double del_E;
     double current_temp = init_temp;
 
     std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
     std::uniform_real_distribution<> distribution(-1,1);
     std::uniform_int_distribution<> distribution1(0 , input_graph.size() - 1);
+
     vector<bool> switched_vertex(input_graph.size(), false);
+
     while (current_temp > final_temp){
         switched_vertex[most_offensive_index] = true;
+
         if(choice == 0)
             kempeChainInterchange(most_offensive_index, neighbour, input_graph);
         else
@@ -27,8 +30,16 @@ simulatedAnnealing
 
         if(switched_vertex[most_offensive_index]) most_offensive_index = distribution1(generator);
 
-        del_E = neighbourPenalty - currentPenalty;
-        double acceptanceProbability = exp(-(2.2 * (double) del_E) / current_temp);
+        del_E = (double) (neighbourPenalty - currentPenalty);
+
+        double error = del_E;
+        if(choice == 1)
+            error -= fabs(del_E) * 0.4;
+
+        double acceptanceProbability = exp(- error / (double) current_temp);
+
+        if(choice == 0)
+            acceptanceProbability -= 0.5;
 
         if (del_E < 0 || distribution(generator) < acceptanceProbability){
             current = neighbour;
@@ -53,12 +64,17 @@ void pairwiseSwap(int index, vector<int> &color_map, vector<vector<int>> &input_
 
     int new_vertex, color2;
     bool vertex_found = false;
+    int max_count = 100;
+    int count = 0;
     while (!vertex_found){
+        if(count > max_count) return;
+        count++;
+
         new_vertex = distribution(generator);
         color2 = color_map[new_vertex];
-        vertex_found = true;
 
         if(new_vertex == init_vertex || color1 == color2) continue;
+        vertex_found = true;
 
         for(auto neighbours: input_graph[new_vertex]){
             if(color_map[neighbours] == color1) {
@@ -85,22 +101,25 @@ calculate_penalty_highest_offence
     int penalty = 0;
     unsigned distance = 0;
     int max_penalty = 0;
+    int max_degree = 0;
     unsigned max_penalty_index = 0;
     for(int vertex = 0; vertex < input_graph.size(); vertex++){
+        penalty = 0;
         for(auto neighbour: input_graph[vertex]){
             distance = abs(current[vertex] - current[neighbour]);
-            penalty = 0;
-
             if(distance < 5) {
-                penalty = pow(2, (5 - distance));
+                penalty += pow(2, (5 - distance));
                 //penalty = 2 * (5 - distance);
             }
-            totalPenalty += penalty;
-
-            if(penalty > max_penalty) {
-                max_penalty_index = vertex;
-                max_penalty = (int) penalty;
-            }
+        }
+        totalPenalty += penalty;
+        if(penalty > max_penalty) {
+            max_penalty_index = vertex;
+            max_penalty = (int) penalty;
+            max_degree = input_graph[vertex].size();
+        }else if(penalty == max_penalty && max_degree < input_graph[vertex].size() ) {
+            max_penalty_index = vertex;
+            max_degree = input_graph[vertex].size();
         }
     }
     return std::make_tuple(totalPenalty / 2, max_penalty_index);

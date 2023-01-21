@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 
     //hill climbing algorithm
     cout << "Initial penalty: " << std::get<0>(calculate_penalty_highest_offence(input_graph, color_map)) / (double) student_number << "\n";
-    color_map = simulatedAnnealing(0, 100, 1e-2, 0.99, input_graph, color_map);
+    color_map = simulatedAnnealing(0, 150, 1e-3, 0.98, input_graph, color_map);
     cout << "After Kempe-Chain: " << std::get<0>(calculate_penalty_highest_offence(input_graph, color_map)) / (double) student_number << "\n";
     color_map = simulatedAnnealing(1, 100, 1e-2, 0.99, input_graph, color_map);
     cout << "After Pair-Swap: " << std::get<0>(calculate_penalty_highest_offence(input_graph, color_map)) / (double) student_number << "\n";
