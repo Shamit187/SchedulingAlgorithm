@@ -23,7 +23,7 @@ using std::cerr;
 using std::priority_queue;
 using std::tuple;
 
-//prototyping
+//fileread.cpp
 int
 generateNodes
         (vector<int>& student_enrolled, string const& course_file_name);
@@ -37,12 +37,43 @@ add_edge
         (vector<int>& student_data, vector<vector<int>>& input_graph);
 
 void
+generateLogFile
+        (vector<vector<int>> &input_graph, vector<int> &color_map);
+
+
+//graphcolor.cpp
+void
+largestDegreeColorGeneration
+        (const vector<vector<int>> &input_graph, const vector<int> &students_enrolled, vector<int> &color_map);
+
+void
+largestStudentColorGeneration
+        (const vector<vector<int>> &input_graph, const vector<int> &students_enrolled, vector<int> &color_map);
+
+void
+randomStudentColorGeneration
+        (const vector<vector<int>> &input_graph, vector<int> &color_map);
+
+int
+findPlausibleColor
+        (int courseSize, const vector<int> &neighbourhood, vector<int>& color_map);
+
+void
+insertVertexDsatur
+        (int vertex_index, int current_saturation, const vector<vector<int>> &input_graph, vector<int>& color_map, priority_queue<tuple<int, int, int>>& queue);
+
+void
+dsaturColorGeneration
+        (const vector<vector<int>> &input_graph, vector<int>& color_map);
+
+//optimization.cpp
+void
 kempeChainInterchange
-        (int most_offensive_index, vector<int> &color_map, vector<vector<int>> &input_graph);
+        (int index, const vector<vector<int>> &input_graph, vector<int> &color_map);
 
 void
 modifiedDFS
-        (int vertex, int color1, int color2, vector<vector<int>> &input_graph, vector<int> &color_map,vector<bool> &visited);
+        (int vertex, int color1, int color2, const vector<vector<int>> &input_graph, vector<int> &color_map, vector<bool> &visited);
 
 void
 color_switch
@@ -50,50 +81,17 @@ color_switch
 
 vector<int>
 simulatedAnnealing
-        (int choice, double init_temp, double final_temp, double cooling_rate, vector<vector<int>> &input_graph, vector<int> &color_map);
+        (int choice, double init_temp, double final_temp, double cooling_rate, const vector<vector<int>> &input_graph, vector<int> &color_map);
 
 tuple<int, int>
 calculate_penalty_highest_offence
-        (vector<vector<int>> &input_graph, vector<int>& current);
-
-void
-generateDegreeHash
-        (vector<vector<int>>& input_graph, priority_queue<tuple<int, int>>& degree_hash);
-
-int
-findPlausibleColor
-        (int courseSize, vector<int>& neighbourhood, vector<int>& color_map);
-
-void
-insertVertexDsatur
-        (int vertex_index, int current_saturation, vector<vector<int>>& input_graph, vector<int>& color_map, priority_queue<tuple<int, int, int>>& queue);
+        (const vector<vector<int>> &input_graph, const vector<int> &current);
 
 int
 connectedDijkstra
-        (vector<vector<int>>& input_graph, vector<int>& color_map, priority_queue<tuple<int, int, int>>& queue);
-
-void
-dsaturColorGeneration
-        (vector<vector<int>>& input_graph, vector<int>& color_map);
+        (const vector<vector<int>> &input_graph, vector<int>& color_map, priority_queue<tuple<int, int, int>>& queue);
 
 void
 pairwiseSwap
-        (int index, vector<int> &color_map, vector<vector<int>> &input_graph);
-
-void
-largestDegreeColorGeneration
-        (vector<vector<int>> &input_graph, vector<int> &color_map);
-
-void
-largestStudentColorGeneration
-        (vector<vector<int>> &input_graph, vector<int>& student_enrolled, vector<int> &color_map);
-
-void
-randomStudentColorGeneration
-        (vector<vector<int>> &input_graph, vector<int> &color_map);
-
-void
-generateLogFile
-    (vector<vector<int>> &input_graph, vector<int> &color_map);
-
+        (int index, const vector<vector<int>> &input_graph, vector<int> &color_map);
 #endif
